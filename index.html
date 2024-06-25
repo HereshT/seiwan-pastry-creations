@@ -68,9 +68,9 @@
         }
 
         .gallery-wrapper {
-            display: flex;
-            transition: transform 0.5s ease;
-        }
+    display: flex;
+    transition: transform 0.5s ease;
+}
 
         .gallery-item {
             flex: 0 0 100%;
@@ -261,6 +261,12 @@
     
         let currentIndex = 0;
     
+        function updateGallery() {
+            const galleryWrapper = document.getElementById('gallery-wrapper');
+            galleryWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateThumbnails();
+        }
+    
         function renderGallery() {
             const galleryWrapper = document.getElementById('gallery-wrapper');
             galleryWrapper.innerHTML = '';
@@ -269,12 +275,11 @@
                 const galleryItem = document.createElement('div');
                 galleryItem.classList.add('gallery-item');
                 galleryItem.style.backgroundImage = `url('${src}')`;
-                galleryItem.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
                 galleryItem.addEventListener('click', () => openZoomModal(src));
                 galleryWrapper.appendChild(galleryItem);
             });
     
-            updateThumbnails();
+            updateGallery();
         }
     
         function renderThumbnails() {
@@ -287,7 +292,7 @@
                 thumbnail.classList.add('thumbnail');
                 thumbnail.addEventListener('click', () => {
                     currentIndex = index;
-                    renderGallery();
+                    updateGallery();
                 });
                 thumbnailBar.appendChild(thumbnail);
             });
@@ -313,12 +318,12 @@
     
         document.getElementById('prevBtn').addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-            renderGallery();
+            updateGallery();
         });
     
         document.getElementById('nextBtn').addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % galleryImages.length;
-            renderGallery();
+            updateGallery();
         });
     
         window.onload = () => {
@@ -327,10 +332,22 @@
         };
     
         // Auto-scroll functionality
-        setInterval(() => {
+        let autoScrollInterval = setInterval(() => {
             currentIndex = (currentIndex + 1) % galleryImages.length;
-            renderGallery();
+            updateGallery();
         }, 8000);
+    
+        // Stop auto-scroll when user interacts with the gallery
+        document.getElementById('gallery-container').addEventListener('mouseenter', () => {
+            clearInterval(autoScrollInterval);
+        });
+    
+        document.getElementById('gallery-container').addEventListener('mouseleave', () => {
+            autoScrollInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % galleryImages.length;
+                updateGallery();
+            }, 8000);
+        });
     </script>
 </body>
 </html>
