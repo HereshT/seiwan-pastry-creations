@@ -231,6 +231,21 @@
         </section>
     </div>
 
+    <!-- Add this just before the closing </body> tag -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Zoomed Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img id="zoomedImage" src="" alt="Zoomed image" style="width: 100%;">
+        </div>
+      </div>
+    </div>
+  </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -243,28 +258,29 @@
             '50.jpg', '51.jpg', '52.jpg', '53.jpg', '54.jpg', '55.jpg', '56.jpg', '57.jpg', '58.jpg', '59.jpg',
             '60.jpg'
         ];
-
+    
         let currentIndex = 0;
-
+    
         function renderGallery() {
             const galleryWrapper = document.getElementById('gallery-wrapper');
             galleryWrapper.innerHTML = '';
-
+    
             galleryImages.forEach((src, index) => {
                 const galleryItem = document.createElement('div');
                 galleryItem.classList.add('gallery-item');
                 galleryItem.style.backgroundImage = `url('${src}')`;
                 galleryItem.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
+                galleryItem.addEventListener('click', () => openZoomModal(src));
                 galleryWrapper.appendChild(galleryItem);
             });
-
+    
             updateThumbnails();
         }
-
+    
         function renderThumbnails() {
             const thumbnailBar = document.getElementById('thumbnail-bar');
-            thumbnailBar.innerHTML = ''; // Clear existing thumbnails
-
+            thumbnailBar.innerHTML = '';
+    
             galleryImages.forEach((src, index) => {
                 const thumbnail = document.createElement('img');
                 thumbnail.src = src;
@@ -276,7 +292,7 @@
                 thumbnailBar.appendChild(thumbnail);
             });
         }
-
+    
         function updateThumbnails() {
             const thumbnails = document.querySelectorAll('.thumbnail');
             thumbnails.forEach((thumbnail, index) => {
@@ -287,27 +303,34 @@
                 }
             });
         }
-
+    
+        function openZoomModal(imageSrc) {
+            const zoomedImage = document.getElementById('zoomedImage');
+            zoomedImage.src = imageSrc;
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        }
+    
         document.getElementById('prevBtn').addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
             renderGallery();
         });
-
+    
         document.getElementById('nextBtn').addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % galleryImages.length;
             renderGallery();
         });
-
+    
         window.onload = () => {
             renderGallery();
             renderThumbnails();
         };
-
+    
         // Auto-scroll functionality
         setInterval(() => {
             currentIndex = (currentIndex + 1) % galleryImages.length;
             renderGallery();
-        }, 8000);  // Changed to 8 seconds (8000 milliseconds)
+        }, 8000);
     </script>
 </body>
 </html>
